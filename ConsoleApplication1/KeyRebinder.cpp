@@ -1,18 +1,16 @@
 #include <iostream>
 #include <Windows.h>
 #include <cstdio>
+#include "KeyReceiver.h"
+
 
 // ASSUME: Muting keys is not a function.
 // - PURPOSE:	1) Rebind keys as fit.
 //				2) Save profile of keybinds to be loaded on startup
 //				3) Implement option to load new keybind profile
 //				4) Offer mouse cursor macros
-// TODO: create UI to do 3 things:
-//		- enter rebind decision branch.
-//		- exit; make user answer yes again to "are you sure?"
-// TODO: create a separate class to handle rebinding.
-//		- dedicate current class to handle UI
 int main() {
+	// Order of Operations:
 	// ask what user would like to do
 	// if rebind, enter rebinding decision branch -- TBD.
 		// if user wants to exit at any point, type exit.
@@ -44,28 +42,14 @@ int main() {
 		}
 		else if (userOption == 1)
 		{
-			// things to learn: WORD, INPUT, MapVirtualKeyEx,
-			//		reading DOCS
-			//	reference: http://stackoverflow.com/questions/22419038/how-to-use-sendinput-function-c
-			// We can now output a keypress.
-			// next: keybind things to "SendInput";
-			// accept key presses 
-			// determine how UI will receive keypresses.
-			WORD vkCode = 0x36;
-			INPUT keyEvent = { 0 };
-			keyEvent.type = INPUT_KEYBOARD;
-			keyEvent.ki.wVk = vkCode;
-			keyEvent.ki.wScan = MapVirtualKeyEx(vkCode, 0, NULL);
-			SendInput(1, &keyEvent, sizeof(keyEvent));
+			KeyReceiver kr = KeyReceiver();
+			//INPUT input = kr.getKeyEvent();
+			kr.getScanCode();
 		}
 		else
 		{
 			printf("Invalid input\n");
 		}
-
-		
-
-
 
 	} while (isRunning);
 
@@ -85,5 +69,18 @@ int main() {
 		}
 	}*/
 
+	// things to learn: WORD, INPUT, MapVirtualKeyEx,
+	//		reading DOCS
+	//	reference: http://stackoverflow.com/questions/22419038/how-to-use-sendinput-function-c
+	// Simulate a keypress
+	// next: keybind things to "SendInput";
+	// accept key presses 
+	// determine how UI will receive keypresses.
+	/*WORD vkCode = 0x36;
+	INPUT keyEvent = { 0 };
+	keyEvent.type = INPUT_KEYBOARD;
+	keyEvent.ki.wVk = vkCode;
+	keyEvent.ki.wScan = MapVirtualKeyEx(vkCode, 0, NULL);
+	SendInput(1, &keyEvent, sizeof(keyEvent));*/
 
 }
