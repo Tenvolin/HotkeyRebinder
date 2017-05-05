@@ -44,7 +44,7 @@ int main() {
 		{
 			KeyReceiver kr = KeyReceiver();
 			//INPUT input = kr.getKeyEvent();
-			kr.getScanCode();
+			kr.getKeyEvent();
 		}
 		else
 		{
