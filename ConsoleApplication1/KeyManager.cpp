@@ -9,7 +9,9 @@
 // - PURPOSE:	1) Rebind keys as fit.
 //				2) Save profile of keybinds to be loaded on startup
 //				3) Implement option to load new keybind profile
-// TOOD: Consider separating keyRebinder into UI and hotkeyManager - something like that..
+// TODO: Consider separating keyRebinder into UI and hotkeyManager - something like that..
+// TODO:	(problem) if modifier keys are used, action only occurs on KEYUPEVENT of modifier
+//			button, causing an unnatural delay; instead, action should be immediate on key press.
 int main() {
 	// Order of Operations:
 	// ask what user would like to do

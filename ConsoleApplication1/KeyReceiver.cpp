@@ -32,11 +32,15 @@ void KeyReceiver::getKeyEvent()
 		ReadConsoleInput(handle, inpRecordArray, 1, lpNumEventsRead);
 		this->vKeyCode = inpRecordArray->Event.KeyEvent.wVirtualKeyCode;
 
-		// set flags and terminate if possible
+		// logic:	Upon pressing alt and/or control the loop will continue,
+		//			and reset; BUT this allows us to immediately introduce a
+		//			non-modifer key WHILE the alt and/or ctrl key is held.
+		//			e.g. affording us the "ctrl+alt+k" hotkey.
 		if (GetAsyncKeyState(VK_LCONTROL) && 0x8000)
 			this->flagCtrl = true;
 		if (GetAsyncKeyState(VK_LMENU) && 0x8000)
 			this->flagAlt = true;
+		// if non-modifier key, terminate!
 		if (this->vKeyCode != VK_CONTROL && this->vKeyCode != 18 &&
 			this->vKeyCode != VK_LCONTROL && this->vKeyCode != VK_RCONTROL &&
 			this->vKeyCode != VK_LMENU && this->vKeyCode != VK_RMENU &&
