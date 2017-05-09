@@ -23,7 +23,7 @@ int KeyBinder::bindKey(bool flagAlt, bool flagCtrl, WORD vKeyCode)
 		fsModifiers |= MOD_ALT;
 	if (flagCtrl)
 		fsModifiers |= MOD_CONTROL;
-
+	// working: success = RegisterHotKey(NULL, this->numKeyBinds, fsModifiers, vKeyCode)
 	if (success = RegisterHotKey(NULL, this->numKeyBinds, fsModifiers, vKeyCode))
 	{
 		// add ID:vKeyCode to map

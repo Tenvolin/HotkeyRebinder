@@ -12,6 +12,10 @@
 // TODO: Consider separating keyRebinder into UI and hotkeyManager - something like that..
 // TODO:	(problem) if modifier keys are used, action only occurs on KEYUPEVENT of modifier
 //			button, causing an unnatural delay; instead, action should be immediate on key press.
+//			I think this is fixed? A non-concern now!
+// TODO: feature-or-not?: if modifier-keys are included in a hotkey, it's not muted; 
+//							function coincides with default window behaviour.
+// TODO: Receive a second series of keys to implement keybind.
 int main() {
 	// Order of Operations:
 	// ask what user would like to do
@@ -60,9 +64,9 @@ int main() {
 
 			// todo: somehow bind the resulting action series of keys we capture.
 			//// Creating resulting action from hotkey -- includes modifier-keys
-			//std::cout << "Please enter the resulting action to occur from that hotkey:" << std::endl;
-			//kr.getKeyEvent();
-
+			std::cout << "Please enter the resulting action to occur from that hotkey (One key with alt/ctrl modifiers):" << std::endl;
+			kr.getKeyEvent();
+			
 
 		}
 		else if (userOption == 3) // Respond to hotkeys
@@ -74,13 +78,50 @@ int main() {
 				{
 					std::map<SHORT, WORD> keybindmap = kb.giveKeyBinds();
 					//WORD vkCode = kb.giveKeyBinds()[msg.wParam];
-					WORD vkCode = 71;
 
-					INPUT keyEvent = { 0 };
+					// array of KeyEvents
+					INPUT pKeyEvents[5];
+
+					WORD vkCode = 0x12; // alt
+					INPUT keyEvent1 = { 0 };
+					keyEvent1.type = INPUT_KEYBOARD;
+					keyEvent1.ki.wVk = vkCode;
+					keyEvent1.ki.wScan = MapVirtualKeyEx(vkCode, 0, NULL);
+
+					vkCode = 0x73; // f4
+					INPUT keyEvent3 = { 0 };
+					keyEvent3.type = INPUT_KEYBOARD;
+					keyEvent3.ki.wVk = vkCode;
+					keyEvent3.ki.wScan = MapVirtualKeyEx(vkCode, 0, NULL);
+
+					vkCode = 0x12; // alt
+					INPUT keyEvent2 = { 0 };
+					keyEvent2.type = INPUT_KEYBOARD;
+					keyEvent2.ki.wVk = vkCode;
+					keyEvent2.ki.wScan = MapVirtualKeyEx(vkCode, 0, NULL);
+					keyEvent2.ki.dwFlags = KEYEVENTF_KEYUP;
+
+					vkCode = 0x73; // f4
+					INPUT keyEvent4 = { 0 };
+					keyEvent4.type = INPUT_KEYBOARD;
+					keyEvent4.ki.wVk = vkCode;
+					keyEvent4.ki.wScan = MapVirtualKeyEx(vkCode, 0, NULL);
+					keyEvent4.ki.dwFlags = KEYEVENTF_KEYUP;
+
+					
+					pKeyEvents[0] = keyEvent1;
+					pKeyEvents[1] = keyEvent3;
+					pKeyEvents[2] = keyEvent2;
+					pKeyEvents[3] = keyEvent4;
+
+					SendInput(4, pKeyEvents, sizeof(keyEvent1));
+					
+
+					/*INPUT keyEvent = { 0 };
 					keyEvent.type = INPUT_KEYBOARD;
 					keyEvent.ki.wVk = vkCode;
 					keyEvent.ki.wScan = MapVirtualKeyEx(vkCode, 0, NULL);
-					SendInput(1, &keyEvent, sizeof(keyEvent));
+					SendInput(1, &keyEvent, sizeof(keyEvent));*/
 
 					// test
 					//WORD vkCode = 71;

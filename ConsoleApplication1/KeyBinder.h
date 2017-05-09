@@ -1,11 +1,14 @@
 #pragma once
 #include <Windows.h>
 #include <map>
+#include "KeyReceiver.h"
+
 class KeyBinder
 {
 private:
-	// keyBindIds with mapped vKeyCodes
-	std::map<SHORT, WORD> keyBindIds;
+	// keyBindIds:vKeyCodes
+	std::map<SHORT, WORD> IdToVkeyMap;
+	std::map<SHORT, KeyNFlag> IdToKnfMap;
 	SHORT numKeyBinds;
 public:
 	KeyBinder();
