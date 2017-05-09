@@ -6,9 +6,9 @@
 class KeyBinder
 {
 private:
-	// keyBindIds:vKeyCodes
-	std::map<SHORT, WORD> IdToVkeyMap;
-	std::map<SHORT, KeyNFlag> IdToKnfMap;
+	// 
+	std::map<SHORT, WORD> IdToHotkey;	// keyBindIds:vKeyCodes
+	std::map<SHORT, KeyNFlag> IdToActionMap; // keyBindIds:KeyNFlag
 	SHORT numKeyBinds;
 public:
 	KeyBinder();
@@ -16,6 +16,9 @@ public:
 	// purpose: Create keybind, return -1 otherwise. Keybinds stored as
 	//			data member.
 	int bindKey(bool flagAlt, bool flagCtrl, WORD vKeyCode);
+	int bindActionToKey(KeyNFlag kf);
 	std::map<SHORT, WORD> giveKeyBinds();
+	std::map<SHORT, KeyNFlag> giveActionmap();
+	int giveNumKeyBinds();
 };
 

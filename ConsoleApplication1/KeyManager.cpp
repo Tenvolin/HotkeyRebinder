@@ -10,12 +10,10 @@
 //				2) Save profile of keybinds to be loaded on startup
 //				3) Implement option to load new keybind profile
 // TODO: Consider separating keyRebinder into UI and hotkeyManager - something like that..
-// TODO:	(problem) if modifier keys are used, action only occurs on KEYUPEVENT of modifier
-//			button, causing an unnatural delay; instead, action should be immediate on key press.
-//			I think this is fixed? A non-concern now!
-// TODO: feature-or-not?: if modifier-keys are included in a hotkey, it's not muted; 
-//							function coincides with default window behaviour.
+// TODO: Add ability to mute key; ignore for now.
 // TODO: Receive a second series of keys to implement keybind.
+// TODO: Increase robustness of mappings between ID and keybinds + actions;
+//			in removing and adding.
 int main() {
 	// Order of Operations:
 	// ask what user would like to do
@@ -62,10 +60,15 @@ int main() {
 			// Create hotkey and pass on FLAGS
 			kb.bindKey(kf.flagAlt, kf.flagCtrl, kf.vKeyCode);
 
-			// todo: somehow bind the resulting action series of keys we capture.
-			//// Creating resulting action from hotkey -- includes modifier-keys
-			std::cout << "Please enter the resulting action to occur from that hotkey (One key with alt/ctrl modifiers):" << std::endl;
+			// TODO: Only initiate second getKeyEvent on KeyUpEvent of vKeyCode;
+			//			getAsyncKeyState <-- use;
+			// Receive another KeyEvent, and insert to IdToActionMap.
+			/*std::cout << "Please enter the resulting action to occur from that hotkey (One key with alt/ctrl modifiers):" << std::endl;
 			kr.getKeyEvent();
+			kb.bindActionToKey(kr.getKeyNFlag()); */
+
+			
+			
 			
 
 		}
@@ -77,7 +80,7 @@ int main() {
 				if (msg.message == WM_HOTKEY)
 				{
 					std::map<SHORT, WORD> keybindmap = kb.giveKeyBinds();
-					//WORD vkCode = kb.giveKeyBinds()[msg.wParam];
+					WORD dog = kb.giveKeyBinds()[msg.wParam];
 
 					// array of KeyEvents
 					INPUT pKeyEvents[5];
@@ -115,21 +118,7 @@ int main() {
 					pKeyEvents[3] = keyEvent4;
 
 					SendInput(4, pKeyEvents, sizeof(keyEvent1));
-					
 
-					/*INPUT keyEvent = { 0 };
-					keyEvent.type = INPUT_KEYBOARD;
-					keyEvent.ki.wVk = vkCode;
-					keyEvent.ki.wScan = MapVirtualKeyEx(vkCode, 0, NULL);
-					SendInput(1, &keyEvent, sizeof(keyEvent));*/
-
-					// test
-					//WORD vkCode = 71;
-					//INPUT keyEvent = { 0 };
-					//keyEvent.type = INPUT_KEYBOARD;
-					//keyEvent.ki.wVk = vkCode;
-					//keyEvent.ki.wScan = MapVirtualKeyEx(vkCode, 0, NULL);
-					//SendInput(1, &keyEvent, sizeof(keyEvent)); 
 				}
 			}
 		}
@@ -144,7 +133,3 @@ int main() {
 // things to learn: WORD, INPUT, MapVirtualKeyEx,
 //		reading DOCS
 //	reference: http://stackoverflow.com/questions/22419038/how-to-use-sendinput-function-c
-// Simulate a keypress
-// next: keybind things to "SendInput";
-// accept key presses 
-// determine how UI will receive keypresses.
