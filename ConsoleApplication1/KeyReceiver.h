@@ -16,8 +16,8 @@ private:
 	bool flagCtrl; // if ctrl key was held down
 	bool flagAlt; // if alt key was held down 
 	WORD vKeyCode; // keydown scancode !!! To be changed to INPUT type, maybe. We'll see.
-	void reset(); // purpose: Reset all member variables.
 public:
+	void reset(); // purpose: Reset all member variables.
 	KeyReceiver();
 	~KeyReceiver();
 	void getKeyEvent();

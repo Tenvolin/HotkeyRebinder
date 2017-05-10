@@ -3,17 +3,36 @@
 #include <cstdio>
 #include "KeyReceiver.h"
 #include "KeyBinder.h"
+#include <string>
+#include <vector>
 
+// purpose: Generate a keyEvent given a vkCode.
+//			mode = 0 -> keyDownEvent
+//			mode = 1 -> keyUpEvent
+INPUT createKeyEvent(WORD vkCode, int mode)
+{
+	INPUT keyEvent = { 0 };
+	keyEvent.type = INPUT_KEYBOARD;
+	keyEvent.ki.wVk = vkCode;
+	keyEvent.ki.wScan = MapVirtualKeyEx(vkCode, 0, NULL);
+	if (mode == 1)
+		keyEvent.ki.dwFlags = KEYEVENTF_KEYUP;
 
+	return keyEvent;
+}
 // ASSUME: Muting keys is not a function.
 // - PURPOSE:	1) Rebind keys as fit.
 //				2) Save profile of keybinds to be loaded on startup
 //				3) Implement option to load new keybind profile
-// TODO: Consider separating keyRebinder into UI and hotkeyManager - something like that..
+// TODO: Consider separating keyRebinder into UI and hotkeyManager - something like that.
 // TODO: Add ability to mute key; ignore for now.
 // TODO: Receive a second series of keys to implement keybind.
 // TODO: Increase robustness of mappings between ID and keybinds + actions;
 //			in removing and adding.
+// TODO: refactor loops with switch blocks;
+// TODO: Allow ability to terminate in midst of hotkey binding and undo hotkey bind.
+// TODO: Need to temporarily mute modifier-keys when performing binded action
+// TODO: KeyNFlag will need to be refactored to allow possibility of macros -- embedded scripting
 int main() {
 	// Order of Operations:
 	// ask what user would like to do
@@ -27,11 +46,13 @@ int main() {
 
 	KeyReceiver kr = KeyReceiver();
 	KeyBinder kb = KeyBinder();
+	KeyNFlag kf; // most recent received key
 
 	// loop: Prompt user to either rebind key or exit program.
 	do
 	{
 		// user input
+		system("CLS");
 		printf(
 			"Please select an option.\n"
 			"1) Rebind a key\n"
@@ -51,73 +72,85 @@ int main() {
 		}
 		else if (userOption == 1) // create keybinds
 		{
-			KeyNFlag kf;
-
-			std::cout << "Please enter a hotkey:" << std::endl;
 			// Receive key press from console input buffer
+			//		and Create hotkey and pass on FLAGS
+			std::cout << "Please enter a hotkey:" << std::endl;
 			kr.getKeyEvent();
 			kf = kr.getKeyNFlag();
-			// Create hotkey and pass on FLAGS
 			kb.bindKey(kf.flagAlt, kf.flagCtrl, kf.vKeyCode);
 
-			// TODO: Only initiate second getKeyEvent on KeyUpEvent of vKeyCode;
-			//			getAsyncKeyState <-- use;
-			// Receive another KeyEvent, and insert to IdToActionMap.
-			/*std::cout << "Please enter the resulting action to occur from that hotkey (One key with alt/ctrl modifiers):" << std::endl;
-			kr.getKeyEvent();
-			kb.bindActionToKey(kr.getKeyNFlag()); */
+			// Prompt user for resulting action of hotkey
+			system("CLS");
+			printf("Select the resulting action to bind to hotkey:\n"
+				"1) Keyboard input\n"
+				"2) Mouse action\n"
+				"3) terminate\n"
+			);
+			std::cin >> userOption;
 
-			
-			
-			
+			// Act on resulting userinput
+			if (userOption == 1)
+			{
+				system("CLS");
+				std::cout << "Please enter the resulting action to occur from that hotkey (One key with alt/ctrl modifiers):" << std::endl;
+				kr.getKeyEvent();
+				kb.bindActionToKey(kr.getKeyNFlag());
+			}
+			else
+			{
+				std::cout << "To be implemented!" << std::endl;
+			}
 
 		}
 		else if (userOption == 3) // Respond to hotkeys
 		{
 			MSG msg = { 0 };
+			int id = msg.wParam;
+			int numKeyEvents = 0;
+			INPUT *pKeyEvents = new INPUT[100]; // array of KeyEvents
+			std::map<SHORT, KeyNFlag> keyBindMap;
+			KeyNFlag kf;
+			int keyMode = 0; // 0-->keydown; 1-->keyUp
+
 			while (GetMessage(&msg, NULL, 0, 0) != 0)
 			{
 				if (msg.message == WM_HOTKEY)
 				{
-					std::map<SHORT, WORD> keybindmap = kb.giveKeyBinds();
-					WORD dog = kb.giveKeyBinds()[msg.wParam];
+					keyBindMap = kb.giveActionMap();
+					kf = keyBindMap[id];
 
-					// array of KeyEvents
-					INPUT pKeyEvents[5];
+					// each keyEvent must both keyPressDown AND keyPressUp
+					// add up to first three key events.
+					if (kf.flagAlt)
+					{
+						pKeyEvents[numKeyEvents] = createKeyEvent(VK_MENU, keyMode);
+						numKeyEvents++;
+					}
+					if (kf.flagCtrl)
+					{
+						pKeyEvents[numKeyEvents] = createKeyEvent(VK_LCONTROL, keyMode);
+						numKeyEvents++;
+					}
+					pKeyEvents[numKeyEvents] = createKeyEvent(kf.vKeyCode, keyMode);
+					numKeyEvents++;
 
-					WORD vkCode = 0x12; // alt
-					INPUT keyEvent1 = { 0 };
-					keyEvent1.type = INPUT_KEYBOARD;
-					keyEvent1.ki.wVk = vkCode;
-					keyEvent1.ki.wScan = MapVirtualKeyEx(vkCode, 0, NULL);
 
-					vkCode = 0x73; // f4
-					INPUT keyEvent3 = { 0 };
-					keyEvent3.type = INPUT_KEYBOARD;
-					keyEvent3.ki.wVk = vkCode;
-					keyEvent3.ki.wScan = MapVirtualKeyEx(vkCode, 0, NULL);
+					// keyUp everything
+					keyMode = 1;
+					pKeyEvents[numKeyEvents] = createKeyEvent(kf.vKeyCode, keyMode);
+					if (kf.flagAlt)
+					{
+						pKeyEvents[numKeyEvents] = createKeyEvent(VK_MENU, keyMode);
+						numKeyEvents++;
+					}
+					if (kf.flagCtrl)
+					{
+						pKeyEvents[numKeyEvents] = createKeyEvent(VK_LCONTROL, keyMode);
+						numKeyEvents++;
+					}
 
-					vkCode = 0x12; // alt
-					INPUT keyEvent2 = { 0 };
-					keyEvent2.type = INPUT_KEYBOARD;
-					keyEvent2.ki.wVk = vkCode;
-					keyEvent2.ki.wScan = MapVirtualKeyEx(vkCode, 0, NULL);
-					keyEvent2.ki.dwFlags = KEYEVENTF_KEYUP;
 
-					vkCode = 0x73; // f4
-					INPUT keyEvent4 = { 0 };
-					keyEvent4.type = INPUT_KEYBOARD;
-					keyEvent4.ki.wVk = vkCode;
-					keyEvent4.ki.wScan = MapVirtualKeyEx(vkCode, 0, NULL);
-					keyEvent4.ki.dwFlags = KEYEVENTF_KEYUP;
-
-					
-					pKeyEvents[0] = keyEvent1;
-					pKeyEvents[1] = keyEvent3;
-					pKeyEvents[2] = keyEvent2;
-					pKeyEvents[3] = keyEvent4;
-
-					SendInput(4, pKeyEvents, sizeof(keyEvent1));
+					SendInput(numKeyEvents, pKeyEvents, sizeof(INPUT));
 
 				}
 			}

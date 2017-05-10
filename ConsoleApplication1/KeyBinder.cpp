@@ -27,12 +27,13 @@ int KeyBinder::bindKey(bool flagAlt, bool flagCtrl, WORD vKeyCode)
 		fsModifiers |= MOD_CONTROL;
 
 	// Ids of each keybind == keyBindNumber
-	if (success = RegisterHotKey(NULL, id++, fsModifiers, vKeyCode))
+	if (success = RegisterHotKey(NULL, id, fsModifiers, vKeyCode))
 	{
 		// increment only if successful
-		this->numKeyBinds = id;
+		
 		std::cout << "Hotkey Registered!" << std::endl;
-		this->IdToHotkey.insert(std::pair<SHORT, WORD>(this->numKeyBinds, vKeyCode));
+		this->IdToHotkey.insert(std::pair<SHORT, WORD>(id, vKeyCode));
+		this->numKeyBinds = ++id;
 	}
 
 
@@ -48,7 +49,7 @@ int KeyBinder::bindActionToKey(KeyNFlag kf)
 	size_t currentSize = this->IdToActionMap.size();
 
 	SHORT id = this->numKeyBinds;
-	this->IdToActionMap.insert(std::pair<SHORT, KeyNFlag>(id, kf));
+	this->IdToActionMap.insert(std::pair<SHORT, KeyNFlag>(id - 1, kf));
 
 	if (currentSize < this->IdToActionMap.size()) {
 		success = 1;
@@ -62,7 +63,7 @@ std::map<SHORT, WORD> KeyBinder::giveKeyBinds()
 	return this->IdToHotkey;
 }
 
-std::map<SHORT, KeyNFlag> KeyBinder::giveActionmap()
+std::map<SHORT, KeyNFlag> KeyBinder::giveActionMap()
 {
 	return this->IdToActionMap;
 }

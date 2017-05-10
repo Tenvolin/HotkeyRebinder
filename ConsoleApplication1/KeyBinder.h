@@ -18,7 +18,7 @@ public:
 	int bindKey(bool flagAlt, bool flagCtrl, WORD vKeyCode);
 	int bindActionToKey(KeyNFlag kf);
 	std::map<SHORT, WORD> giveKeyBinds();
-	std::map<SHORT, KeyNFlag> giveActionmap();
+	std::map<SHORT, KeyNFlag> giveActionMap();
 	int giveNumKeyBinds();
 };
 
