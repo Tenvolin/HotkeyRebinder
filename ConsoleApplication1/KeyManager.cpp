@@ -4,7 +4,6 @@
 #include "KeyReceiver.h"
 #include "KeyBinder.h"
 #include <string>
-#include <vector>
 
 // purpose: Generate a keyEvent given a vkCode.
 //			mode = 0 -> keyDownEvent
@@ -20,20 +19,20 @@ INPUT createKeyEvent(WORD vkCode, int mode)
 
 	return keyEvent;
 }
+
 // ASSUME: Muting keys is not a function.
 // - PURPOSE:	1) Rebind keys as fit.
 //				2) Save profile of keybinds to be loaded on startup
 //				3) Implement option to load new keybind profile
-// TODO: Consider separating keyRebinder into UI and hotkeyManager - something like that.
-// TODO: Add ability to mute key; ignore for now.
 // TODO: Receive a second series of keys to implement keybind.
-// TODO: Increase robustness of mappings between ID and keybinds + actions;
-//			in removing and adding.
+// TODO: Increase robustness of mappings between ID and keybinds + actions; in removing and adding.
 // TODO: refactor loops with switch blocks;
 // TODO: Allow ability to terminate in midst of hotkey binding and undo hotkey bind.
-// TODO: Need to temporarily mute modifier-keys when performing binded action
+// TODO: Need to temporarily mute modifier-keys when performing binded action; 
 // TODO: KeyNFlag will need to be refactored to allow possibility of macros -- embedded scripting
-// TODO: Mute all keys temporarily, so we can actually bind alt+f4, for example.
+// TODO: Mute all special keys temporarily when binding, so we can actually bind alt+f4, for example.
+// TODO: Show status of current keybinds when binding keys
+
 int main() {
 	// Order of Operations:
 	// ask what user would like to do
@@ -116,8 +115,7 @@ int main() {
 					keyBindMap = key_binder.giveActionMap();
 					kf = keyBindMap[id];
 
-					// each keyEvent must both keyPressDown AND keyPressUp
-					// add up to first three key events.
+					// Keydown up to three KeyEvents.
 					if (kf.flagAlt)
 					{
 						pKeyEvents[numKeyEvents] = createKeyEvent(VK_MENU, keyMode);
@@ -131,8 +129,7 @@ int main() {
 					pKeyEvents[numKeyEvents] = createKeyEvent(kf.vKeyCode, keyMode);
 					numKeyEvents++;
 
-
-					// keyUp everything
+					// keyUp up to three keyEvents
 					keyMode = 1;
 					pKeyEvents[numKeyEvents] = createKeyEvent(kf.vKeyCode, keyMode);
 					if (kf.flagAlt)
@@ -145,6 +142,8 @@ int main() {
 						pKeyEvents[numKeyEvents] = createKeyEvent(VK_LCONTROL, keyMode);
 						numKeyEvents++;
 					}
+					pKeyEvents[numKeyEvents] = createKeyEvent(kf.vKeyCode, keyMode);
+					numKeyEvents++;
 
 
 					SendInput(numKeyEvents, pKeyEvents, sizeof(INPUT));
