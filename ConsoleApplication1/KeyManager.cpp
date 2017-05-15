@@ -33,6 +33,7 @@ INPUT createKeyEvent(WORD vkCode, int mode)
 // TODO: Allow ability to terminate in midst of hotkey binding and undo hotkey bind.
 // TODO: Need to temporarily mute modifier-keys when performing binded action
 // TODO: KeyNFlag will need to be refactored to allow possibility of macros -- embedded scripting
+// TODO: Mute all keys temporarily, so we can actually bind alt+f4, for example.
 int main() {
 	// Order of Operations:
 	// ask what user would like to do
@@ -44,8 +45,8 @@ int main() {
 	bool isRunning = true; // possible redundancy; !!! remove later.
 	int userOption = 0;
 
-	KeyReceiver kr = KeyReceiver();
-	KeyBinder kb = KeyBinder();
+	KeyReceiver key_receiver = KeyReceiver();
+	KeyBinder key_binder = KeyBinder();
 	KeyNFlag kf; // most recent received key
 
 	// loop: Prompt user to either rebind key or exit program.
@@ -75,32 +76,22 @@ int main() {
 			// Receive key press from console input buffer
 			//		and Create hotkey and pass on FLAGS
 			std::cout << "Please enter a hotkey:" << std::endl;
-			kr.getKeyEvent();
-			kf = kr.getKeyNFlag();
-			kb.bindKey(kf.flagAlt, kf.flagCtrl, kf.vKeyCode);
+			key_receiver.getKeyEvent();
+			kf = key_receiver.getKeyNFlag();
+			key_binder.bindKey(kf.flagAlt, kf.flagCtrl, kf.vKeyCode);
 
-			// Prompt user for resulting action of hotkey
 			system("CLS");
-			printf("Select the resulting action to bind to hotkey:\n"
-				"1) Keyboard input\n"
-				"2) Mouse action\n"
-				"3) terminate\n"
-			);
-			std::cin >> userOption;
+			std::cout << "Press Enter, followed by your key of action." << std::endl;
+			
+			// My attempt to clear console input buffer.
+			// First ignore clears buffer up to the first enter statement(ui);
+			// Sec ignore blocks, awaiting user to press enter; thus
+			// flushing buffer and allowing getKeyEvent() to block.
+			std::cin.ignore(1000, '\n');
+			std::cin.ignore(1000, '\n');
 
-			// Act on resulting userinput
-			if (userOption == 1)
-			{
-				system("CLS");
-				std::cout << "Please enter the resulting action to occur from that hotkey (One key with alt/ctrl modifiers):" << std::endl;
-				kr.getKeyEvent();
-				kb.bindActionToKey(kr.getKeyNFlag());
-			}
-			else
-			{
-				std::cout << "To be implemented!" << std::endl;
-			}
-
+			key_receiver.getKeyEvent();
+			key_binder.bindActionToKey(key_receiver.getKeyNFlag());
 		}
 		else if (userOption == 3) // Respond to hotkeys
 		{
@@ -109,14 +100,22 @@ int main() {
 			int numKeyEvents = 0;
 			INPUT *pKeyEvents = new INPUT[100]; // array of KeyEvents
 			std::map<SHORT, KeyNFlag> keyBindMap;
-			KeyNFlag kf;
+			KeyNFlag kf = { 0 };
 			int keyMode = 0; // 0-->keydown; 1-->keyUp
 
 			while (GetMessage(&msg, NULL, 0, 0) != 0)
-			{
+			{	
 				if (msg.message == WM_HOTKEY)
 				{
-					keyBindMap = kb.giveActionMap();
+
+					// Reset both at reasonable interval to avoid lagging/crashing
+					// TODO: Figure out exactly why 
+					if (numKeyEvents > 80) {
+						numKeyEvents = 0;
+						keyMode = 0;
+					}
+
+					keyBindMap = key_binder.giveActionMap();
 					kf = keyBindMap[id];
 
 					// each keyEvent must both keyPressDown AND keyPressUp
