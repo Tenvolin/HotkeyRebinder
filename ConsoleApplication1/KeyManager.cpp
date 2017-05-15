@@ -79,6 +79,7 @@ int main() {
 			key_receiver.getKeyEvent();
 			kf = key_receiver.getKeyNFlag();
 			key_binder.bindKey(kf.flagAlt, kf.flagCtrl, kf.vKeyCode);
+			Sleep(100);
 
 			system("CLS");
 			std::cout << "Press Enter, followed by your key of action." << std::endl;
@@ -100,20 +101,17 @@ int main() {
 			int numKeyEvents = 0;
 			INPUT *pKeyEvents = new INPUT[100]; // array of KeyEvents
 			std::map<SHORT, KeyNFlag> keyBindMap;
-			KeyNFlag kf = { 0 };
+			//KeyNFlag kf = { 0 };
 			int keyMode = 0; // 0-->keydown; 1-->keyUp
 
 			while (GetMessage(&msg, NULL, 0, 0) != 0)
 			{	
+				id = msg.wParam;
 				if (msg.message == WM_HOTKEY)
 				{
-
-					// Reset both at reasonable interval to avoid lagging/crashing
-					// TODO: Figure out exactly why 
-					if (numKeyEvents > 80) {
-						numKeyEvents = 0;
-						keyMode = 0;
-					}
+					// reset to write and read appropriate number of keyEvents
+					keyMode = 0;
+					numKeyEvents = 0;
 
 					keyBindMap = key_binder.giveActionMap();
 					kf = keyBindMap[id];
