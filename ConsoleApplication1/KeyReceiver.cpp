@@ -33,7 +33,7 @@ void KeyReceiver::getKeyEvent()
 		this->vKeyCode = inpRecordArray->Event.KeyEvent.wVirtualKeyCode;
 
 		// logic:	Upon pressing alt and/or control the loop will continue,
-		//			and reset; BUT this allows us to immediately introduce a
+		//			and reset; this allows us to immediately introduce a
 		//			non-modifer key WHILE the alt and/or ctrl key is held.
 		//			e.g. affording us the "ctrl+alt+k" hotkey.
 		if (GetAsyncKeyState(VK_LCONTROL) && 0x8000)

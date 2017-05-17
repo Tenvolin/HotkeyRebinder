@@ -24,9 +24,7 @@ INPUT createKeyEvent(WORD vkCode, int mode)
 // - PURPOSE:	1) Rebind keys as fit.
 //				2) Save profile of keybinds to be loaded on startup
 //				3) Implement option to load new keybind profile
-// TODO: Receive a second series of keys to implement keybind.
 // TODO: Increase robustness of mappings between ID and keybinds + actions; in removing and adding.
-// TODO: refactor loops with switch blocks;
 // TODO: Allow ability to terminate in midst of hotkey binding and undo hotkey bind.
 // TODO: Need to temporarily mute modifier-keys when performing binded action; 
 // TODO: KeyNFlag will need to be refactored to allow possibility of macros -- embedded scripting
@@ -83,7 +81,6 @@ int main() {
 			system("CLS");
 			std::cout << "Press Enter, followed by your key of action." << std::endl;
 			
-			// My attempt to clear console input buffer.
 			// First ignore clears buffer up to the first enter statement(ui);
 			// Sec ignore blocks, awaiting user to press enter; thus
 			// flushing buffer and allowing getKeyEvent() to block.
@@ -159,6 +156,4 @@ int main() {
 	} while (isRunning);
 
 }
-// things to learn: WORD, INPUT, MapVirtualKeyEx,
-//		reading DOCS
-//	reference: http://stackoverflow.com/questions/22419038/how-to-use-sendinput-function-c
+
