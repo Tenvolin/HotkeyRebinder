@@ -80,7 +80,7 @@ int main() {
 
 			system("CLS");
 			std::cout << "Press Enter, followed by your key of action." << std::endl;
-			
+
 			// First ignore clears buffer up to the first enter statement(ui);
 			// Sec ignore blocks, awaiting user to press enter; thus
 			// flushing buffer and allowing getKeyEvent() to block.
@@ -97,14 +97,15 @@ int main() {
 			int numKeyEvents = 0;
 			INPUT *pKeyEvents = new INPUT[100]; // array of KeyEvents
 			std::map<SHORT, KeyNFlag> keyBindMap;
-			//KeyNFlag kf = { 0 };
 			int keyMode = 0; // 0-->keydown; 1-->keyUp
 
 			while (GetMessage(&msg, NULL, 0, 0) != 0)
-			{	
-				id = msg.wParam;
-				if (msg.message == WM_HOTKEY)
+			{
+
+				switch (msg.message)
 				{
+					id = msg.wParam;
+				case WM_HOTKEY:
 					// reset to write and read appropriate number of keyEvents
 					keyMode = 0;
 					numKeyEvents = 0;
@@ -144,8 +145,12 @@ int main() {
 
 
 					SendInput(numKeyEvents, pKeyEvents, sizeof(INPUT));
-
+					break;
+				default:
+					// don't do anything
+					break;
 				}
+
 			}
 		}
 		else
