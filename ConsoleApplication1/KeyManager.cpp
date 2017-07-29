@@ -1,3 +1,12 @@
+/**
+KeyRebinder, KeyManager.cpp
+purpose: main programmatic entry point. This program uses WINAPI functions made
+			available from Windows.h to achieve the following: receiving
+			keypress events, creating hotkeys, and handling hotkey windows 
+			events.
+
+@author Alex Chung
+*/
 #include <iostream>
 #include <Windows.h>
 #include <cstdio>
@@ -24,19 +33,13 @@ INPUT createKeyEvent(WORD vkCode, int mode)
 // - PURPOSE:	1) Rebind keys as fit.
 //				2) Save profile of keybinds to be loaded on startup
 //				3) Implement option to load new keybind profile
-// TODO: Increase robustness of mappings between ID and keybinds + actions; in removing and adding.
-// TODO: Allow ability to terminate in midst of hotkey binding and undo hotkey bind.
-// TODO: Need to temporarily mute modifier-keys when performing binded action; 
-// TODO: KeyNFlag will need to be refactored to allow possibility of macros -- embedded scripting
-// TODO: Mute all special keys temporarily when binding, so we can actually bind alt+f4, for example.
-// TODO: Show status of current keybinds when binding keys
-
+// TODO: todo file located in local notes.txt
 int main() {
 	// Order of Operations:
 	// ask what user would like to do
-	// if rebind, enter rebinding decision branch -- TBD.
-		// if user wants to exit at any point, type exit.
-		// if user ever enters an invalid option, program asks to try again.
+	// if rebind, enter rebinding decision branch
+		// TODO: if user wants to exit at any point, type exit. 
+		// TODO: if user ever enters an invalid option, program asks to try again.
 	// if exit, ask exit again.
 	// if invalid option, give prompt again.
 	bool isRunning = true; // possible redundancy; !!! remove later.
@@ -81,9 +84,7 @@ int main() {
 			system("CLS");
 			std::cout << "Press Enter, followed by your key of action." << std::endl;
 
-			// First ignore clears buffer up to the first enter statement(ui);
-			// Sec ignore blocks, awaiting user to press enter; thus
-			// flushing buffer and allowing getKeyEvent() to block.
+			// ? Calling cin.ignore twice seems to work best.
 			std::cin.ignore(1000, '\n');
 			std::cin.ignore(1000, '\n');
 

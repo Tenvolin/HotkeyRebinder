@@ -1,3 +1,9 @@
+/**
+KeyRebinder, KeyBinder.cpp
+purpose: definitions of KeyReceiver class members.
+
+@author Alex Chung
+*/
 #include "stdafx.h"
 #include "KeyBinder.h"
 #include <iostream>
@@ -15,6 +21,8 @@ KeyBinder::~KeyBinder()
 {
 }
 
+// purpose: defines a system-wide hot key, using alt/ctrl flags and a vKeyCode.
+// output: 0 on failure to register hotkey; 1 on success.
 int KeyBinder::bindKey(bool flagAlt, bool flagCtrl, WORD vKeyCode)
 {
 	int success = 0;
@@ -30,18 +38,16 @@ int KeyBinder::bindKey(bool flagAlt, bool flagCtrl, WORD vKeyCode)
 	if (success = RegisterHotKey(NULL, id, fsModifiers, vKeyCode))
 	{
 		// increment only if successful
-		
 		std::cout << "Hotkey Registered!" << std::endl;
 		this->IdToHotkey.insert(std::pair<SHORT, WORD>(id, vKeyCode));
 		this->numKeyBinds = ++id;
 	}
 
-
 	return success;
 }
 
-// purpose: Bind action to most recent hot key.
-//			To be called after bindKey;
+// purpose: Bind action to most recent hot key;
+//			To be called after bindKey.
 // output: return -1 if failure to insert.
 int KeyBinder::bindActionToKey(KeyNFlag kf)
 {

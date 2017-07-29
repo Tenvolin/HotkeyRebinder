@@ -1,6 +1,14 @@
+/**
+KeyRebinder, KeyReceiver.h
+purpose: declarations for KeyReceiver class and KeyNFlag struct.
+
+@author Alex Chung
+*/
 #pragma once
 #include <Windows.h>
 
+// purpose: stores a keypress and the status of alt and ctrl at time of 
+//			detection.
 struct KeyNFlag {
 	bool flagAlt;
 	bool flagCtrl;

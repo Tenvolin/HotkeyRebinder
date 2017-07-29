@@ -1,3 +1,9 @@
+/**
+KeyRebinder, KeyReceiver.cpp
+purpose: definitions of KeyReceiver class members.
+
+@author Alex Chung
+*/
 #include "stdafx.h"
 #include "KeyReceiver.h"
 #include <iostream>
