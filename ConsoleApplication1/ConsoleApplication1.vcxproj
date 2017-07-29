@@ -136,9 +136,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="KeyBinder.h" />
     <ClInclude Include="KeyReceiver.h" />
     <ClInclude Include="stdafx.h" />

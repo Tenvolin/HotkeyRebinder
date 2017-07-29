@@ -29,8 +29,8 @@ INPUT createKeyEvent(WORD vkCode, int mode)
 	return keyEvent;
 }
 
-// ASSUME: Muting keys is not a function.
-// - PURPOSE:	1) Rebind keys as fit.
+// assume: Muting keys is not a function.
+// purpose:		1) Rebind keys as fit.
 //				2) Save profile of keybinds to be loaded on startup
 //				3) Implement option to load new keybind profile
 // TODO: todo file located in local notes.txt
