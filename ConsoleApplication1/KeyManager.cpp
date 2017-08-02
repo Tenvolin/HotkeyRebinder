@@ -7,12 +7,14 @@ purpose: main programmatic entry point. This program uses WINAPI functions made
 
 @author Alex Chung
 */
-#include <iostream>
+#include "stdafx.h"
 #include <Windows.h>
 #include <cstdio>
+#include <iostream>
+#include <string>
 #include "KeyReceiver.h"
 #include "KeyBinder.h"
-#include <string>
+
 
 // purpose: Generate a keyEvent given a vkCode.
 //			mode = 0 -> keyDownEvent
